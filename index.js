@@ -39,6 +39,17 @@ app.get('/api/persons', (req, res) => {
   res.json(persons)
 })
 
+// Retrieve
+app.get('/api/persons/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  const person = persons.find(person => person.id === id)
+  if (person) {
+    res.json(person)
+  } else {
+    res.status(404).send('No matching entry found.').end()
+  }
+})
+
 // Info
 app.get('/info', (req, res) =>  {
   const infoMessage = buildInfoMessage()
