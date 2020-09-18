@@ -4,6 +4,13 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
+const buildInfoMessage = () => {
+  let message = `Phonebook has ${persons.length} entries.`
+  message += '<br/>'
+  message += new Date()
+  return message
+}
+
 let persons = [
   {
     id: 1,
@@ -27,8 +34,15 @@ let persons = [
   }
 ]
 
+// Fetch
 app.get('/api/persons', (req, res) => {
   res.json(persons)
+})
+
+// Info
+app.get('/info', (req, res) =>  {
+  const infoMessage = buildInfoMessage()
+  res.send(infoMessage)
 })
 
 app.listen(PORT, () => {
