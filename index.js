@@ -50,6 +50,13 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
+// Remove
+app.delete('/api/persons/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  persons = persons.filter(person => person.id !== id)
+  res.status(204).end()
+})
+
 // Info
 app.get('/info', (req, res) =>  {
   const infoMessage = buildInfoMessage()
