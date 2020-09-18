@@ -1,4 +1,5 @@
 const PORT = 3001
+const MAX_ID = 5000
 
 const express = require('express')
 const app = express()
@@ -9,6 +10,15 @@ const buildInfoMessage = () => {
   message += '<br/>'
   message += new Date()
   return message
+}
+
+const generateId = () => {
+  return Math.floor(Math.random()*MAX_ID)
+}
+
+const nameInPhonebook = name => {
+  const person = persons.find(person => person.name === name)
+  return !!person
 }
 
 let persons = [
@@ -48,6 +58,36 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).send('No matching entry found.').end()
   }
+})
+
+// Create
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+  if (!body.number) {
+    return res.status(400).json({
+      error: 'Missing number'
+    })
+  }
+  if (!body.name) {
+    return res.status(400).json({
+      error: 'Missing name'
+    })
+  }
+
+  if (nameInPhonebook(body.name)) {
+    return res.status(400).json({
+      error: 'Person already exists in phonebook'
+    })
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId()
+  }
+  persons = persons.concat(person)
+
+  res.json(person)
 })
 
 // Remove
