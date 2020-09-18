@@ -1,0 +1,24 @@
+{
+  "name": "part3",
+  "version": "1.0.0",
+  "description": "Exercise 3 for Full Stack Open 2020.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jakkara/full-stack-open-2020-part-3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jakkara/full-stack-open-2020-part-3/issues"
+  },
+  "homepage": "https://github.com/Jakkara/full-stack-open-2020-part-3#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
