@@ -1,4 +1,4 @@
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 const MAX_ID = 5000
 
 const express = require('express')
