@@ -1,13 +1,11 @@
 require('dotenv').config()
 
 const PORT = process.env.PORT || 3001
-const MAX_ID = 5000
 
 const express = require('express')
 const PhoneNumber = require('./models/phonenumbers')
 const morgan = require('morgan')
 const cors = require('cors')
-const { response } = require('express')
 
 const app = express()
 app.use(express.static('build'))
@@ -21,15 +19,14 @@ morgan.token('post-data', (req, res) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
 const buildInfoMessage = () => {
-  let message = `Phonebook has ${persons.length} entries.`
-  message += '<br/>'
-  message += new Date()
-  return message
 }
 
 const nameInPhonebook = name => {
-  const person = persons.find(person => person.name === name)
-  return !!person
+  PhoneNumber.find({ name }).then(result => {
+    if (result) {
+      return true
+    } else return false
+  })
 }
 
 let persons = [
@@ -134,8 +131,13 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 // Info
 app.get('/info', (req, res) => {
-  const infoMessage = buildInfoMessage()
-  res.send(infoMessage)
+  const count = PhoneNumber.countDocuments({})
+    .then(result => {
+      let message = `Phonebook has ${result} entries.`
+      message += '<br/>'
+      message += new Date()
+      res.send(message)
+    })
 })
 
 // Exception middleware
