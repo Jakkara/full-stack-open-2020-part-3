@@ -8,6 +8,7 @@ const PhoneNumber = require('./models/phonenumbers')
 const morgan = require('morgan')
 const cors = require('cors')
 const { response } = require('express')
+const phonenumbers = require('./models/phonenumbers')
 
 const app = express()
 app.use(express.static('build'))
@@ -114,6 +115,22 @@ app.delete('/api/persons/:id', (req, res, next) => {
       res.status(204).end()
     })
     .catch(e => next(e))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  const body = req.body
+
+  const entry = {
+    name: body.name,
+    number: body.number,
+  }
+
+  PhoneNumber.findByIdAndUpdate(id, entry, { new: true })
+    .then(updatedEntry => {
+      res.json(updatedEntry)
+    })
+    .catch(error => next(error))
 })
 
 // Info
