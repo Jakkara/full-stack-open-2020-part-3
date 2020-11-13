@@ -1,9 +1,13 @@
+require('dotenv').config()
+
 const PORT = process.env.PORT || 3001
 const MAX_ID = 5000
 
 const express = require('express')
+const PhoneNumber = require('./models/phonenumbers')
 const morgan = require('morgan')
 const cors = require('cors')
+const { response } = require('express')
 const app = express()
 app.use(express.json())
 app.use(express.static('build'))
@@ -55,18 +59,17 @@ let persons = [
 
 // Fetch
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  PhoneNumber.find({}).then(results => {
+    res.json(results)
+  })
 })
 
 // Retrieve
 app.get('/api/persons/:id', (req, res) => {
   const id = parseInt(req.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).send('No matching entry found.').end()
-  }
+  PhoneNumber.findById(id).then(entry => {
+    res.json(entry)
+  })
 })
 
 // Create
@@ -89,14 +92,13 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  const person = {
+  const entry = new PhoneNumber({
     name: body.name,
-    number: body.number,
-    id: generateId()
-  }
-  persons = persons.concat(person)
-
-  res.json(person)
+    number: body.number
+  })
+  entry.save().then(saved => {
+    res.json(saved)
+  })
 })
 
 // Remove
