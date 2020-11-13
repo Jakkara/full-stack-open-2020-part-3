@@ -18,9 +18,6 @@ morgan.token('post-data', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
-const buildInfoMessage = () => {
-}
-
 const nameInPhonebook = name => {
   PhoneNumber.find({ name }).then(result => {
     if (result) {
@@ -74,7 +71,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 })
 
 // Create
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
   if (!body.number) {
     return res.status(400).json({
@@ -97,9 +94,11 @@ app.post('/api/persons', (req, res) => {
     name: body.name,
     number: body.number
   })
-  entry.save().then(saved => {
-    res.json(saved)
-  })
+  entry.save()
+    .then(saved => {
+      res.json(saved)
+    })
+    .catch(e => next(e))
 })
 
 // Remove
@@ -151,6 +150,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+  if (error.name = 'ValidationError') {
+    return response.status(400).send({ error: 'Name already exists' })
   }
 
   next(error)
