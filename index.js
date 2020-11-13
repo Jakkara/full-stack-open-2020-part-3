@@ -8,11 +8,13 @@ const PhoneNumber = require('./models/phonenumbers')
 const morgan = require('morgan')
 const cors = require('cors')
 const { response } = require('express')
+
 const app = express()
-app.use(express.json())
 app.use(express.static('build'))
+app.use(express.json())
 app.use(cors())
 
+// Morgan
 morgan.token('post-data', (req, res) => {
   return req.body ? JSON.stringify(req.body) : ''
 })
@@ -23,10 +25,6 @@ const buildInfoMessage = () => {
   message += '<br/>'
   message += new Date()
   return message
-}
-
-const generateId = () => {
-  return Math.floor(Math.random()*MAX_ID)
 }
 
 const nameInPhonebook = name => {
@@ -65,11 +63,17 @@ app.get('/api/persons', (req, res) => {
 })
 
 // Retrieve
-app.get('/api/persons/:id', (req, res) => {
-  const id = parseInt(req.params.id)
-  PhoneNumber.findById(id).then(entry => {
-    res.json(entry)
-  })
+app.get('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  PhoneNumber.findById(id)
+    .then(entry => {
+      if (entry) {
+        res.json(entry)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(e => next(e))
 })
 
 // Create
@@ -102,18 +106,39 @@ app.post('/api/persons', (req, res) => {
 })
 
 // Remove
-app.delete('/api/persons/:id', (req, res) => {
-  const id = parseInt(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  console.log(id)
+  PhoneNumber.findByIdAndDelete(id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(e => next(e))
 })
 
 // Info
-app.get('/info', (req, res) =>  {
+app.get('/info', (req, res) => {
   const infoMessage = buildInfoMessage()
   res.send(infoMessage)
 })
 
-app.listen(PORT, () => {
+// Exception middleware
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+app.use(errorHandler)
+
+app.listen(PORT, () => {
   console.log(`Express server listening on ${PORT}.`);
 })
