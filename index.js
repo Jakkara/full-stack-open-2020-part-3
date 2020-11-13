@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(cors())
 
 // Morgan
-morgan.token('post-data', (req, res) => {
+morgan.token('post-data', (req) => {
   return req.body ? JSON.stringify(req.body) : ''
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
@@ -25,29 +25,6 @@ const nameInPhonebook = name => {
     } else return false
   })
 }
-
-let persons = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456'
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-54321'
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '33-12-1234'
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendick',
-    number: '02-02-02'
-  }
-]
 
 // Fetch
 app.get('/api/persons', (req, res) => {
@@ -106,7 +83,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   console.log(id)
   PhoneNumber.findByIdAndDelete(id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(e => next(e))
@@ -130,7 +107,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 // Info
 app.get('/info', (req, res) => {
-  const count = PhoneNumber.countDocuments({})
+  PhoneNumber.countDocuments({})
     .then(result => {
       let message = `Phonebook has ${result} entries.`
       message += '<br/>'
@@ -151,7 +128,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }
-  if (error.name = 'ValidationError') {
+  if (error.name === 'ValidationError') {
     return response.status(400).send({ error: error.message })
   }
 
@@ -160,5 +137,5 @@ const errorHandler = (error, request, response, next) => {
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-  console.log(`Express server listening on ${PORT}.`);
+  console.log(`Express server listening on ${PORT}.`)
 })

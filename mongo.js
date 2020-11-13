@@ -15,10 +15,10 @@ const url = `mongodb+srv://fso2020-jali:${password}@cluster0.wkmcw.mongodb.net/p
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
 const printEntries = condition => {
-  console.log("Phonebook:");
+  console.log('Phonebook:')
   PhoneNumber.find(condition).then(results => {
     results.forEach(result => {
-      console.log(`${result.name}   ${result.number}`);
+      console.log(`${result.name}   ${result.number}`)
     })
     mongoose.connection.close()
   })
@@ -34,41 +34,13 @@ const addEntry = (name, number) => {
 }
 
 switch (process.argv.length) {
-  case 3:
-    printEntries({})
-    break;
-  case 4:
-    console.log("Enter a name and a number")
-    mongoose.connection.close()
-    break;
-  case 5:
-    addEntry(process.argv[3], process.argv[4])
+case 3:
+  printEntries({})
+  break
+case 4:
+  console.log('Enter a name and a number')
+  mongoose.connection.close()
+  break
+case 5:
+  addEntry(process.argv[3], process.argv[4])
 }
-
-
-/* const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean
-})
-
-const Note = mongoose.model('Note', noteSchema)
-
-const note = new Note({
-  content: 'HTML is Easy',
-  date: new Date(),
-  important: true,
-})
-
-note.save().then(result => {
-  console.log('note saved!')
-  mongoose.connection.close()
-})
-
-Note.find({}).then(result => {
-  result.forEach(note => {
-    console.log(note)
-  })
-  mongoose.connection.close()
-})
- */
