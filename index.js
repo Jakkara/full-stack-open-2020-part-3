@@ -8,7 +8,6 @@ const PhoneNumber = require('./models/phonenumbers')
 const morgan = require('morgan')
 const cors = require('cors')
 const { response } = require('express')
-const phonenumbers = require('./models/phonenumbers')
 
 const app = express()
 app.use(express.static('build'))
